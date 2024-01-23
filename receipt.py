@@ -1,14 +1,21 @@
 import requests
 
-print("=== Python Receipt OCR ===")
+print("=== Python Receipt OCR Demo - Need help? Email support@asprise.com ===")
 
 receiptOcrEndpoint = 'https://ocr.asprise.com/api/v1/receipt' # Receipt OCR API endpoint
-imageFile = "receipt.jpg" # // Modify it to use your own file
+imageFile = "receipt.jpg" # // Modify this to use your own file if necessary
 r = requests.post(receiptOcrEndpoint, data = { \
-  'api_key': 'TEST',        # Use 'TEST' for testing purpose \
+  'client_id': 'TEST',        # Use 'TEST' for testing purpose \
   'recognizer': 'auto',       # can be 'US', 'CA', 'JP', 'SG' or 'auto' \
   'ref_no': 'ocr_python_123', # optional caller provided ref code \
   }, \
   files = {"file": open(imageFile, "rb")})
 
+# to print out everything from the ocr
 print(r.text) # result in JSON
+
+# to print the items only
+data = r.json()
+items = data['receipts'][0]['items']
+for item in items:
+    print(item)
