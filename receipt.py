@@ -1,4 +1,5 @@
 import requests
+import json
 
 print("=== Python Receipt OCR Demo - Need help? Email support@asprise.com ===")
 
@@ -14,8 +15,12 @@ r = requests.post(receiptOcrEndpoint, data = { \
 # to print out everything from the ocr
 print(r.text) # result in JSON
 
+with open("reciept.json", "w") as file:
+    json.dump(r.text, file)
+
+
 # to print the items only
 data = r.json()
-items = data['receipts'][0]['items']
+items = data['receipts'][0]['items']['description']
 for item in items:
     print(item)
