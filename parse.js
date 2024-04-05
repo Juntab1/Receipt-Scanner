@@ -1,10 +1,11 @@
 var fs = require('fs');
+var map = new Map();
+// Firebase or supabase for database in the future
 
 fs.readFile('reciept.json', 'utf-8', function (err, data) {
     if (err) throw err;
 
     var obj = JSON.parse(data);
-
     const itemsLength = Object.keys(obj.receipts[0].items).length;
     //console.log(obj);
 
@@ -16,16 +17,45 @@ fs.readFile('reciept.json', 'utf-8', function (err, data) {
 
 
 
-    runParse(obj, doNotInclude)
+    runParse(obj, doNotInclude, itemsLength);
+    addToPantry("Onions", 3);
+    removeFromPantry("Celery", 10);
+    removeFromPantry("Onions", 1);
+    showPantry();
 });
 
 // this is the main function to run a parse of a json
 function runParse(obj, notIncluded, itemsCount) {
-    for (let i = 0; i < itemsCount; i++){
-        if (!notIncluded.includes(obj.receipts[0].items[i].description)) {
-            console.log(obj.receipts[0].items[i].description);
+    for (let i = 0; i < itemsCount; i++) {
+        let currItem = obj.receipts[0].items[i].description;
+        if (!notIncluded.includes(currItem)) {
+            if (map.has(currItem)) {
+                map.set(currItem, map.get(currItem) + 1);
+            } else {
+                map.set(currItem, 1);
+            }
         }
     }
+}
+
+function removeFromPantry(item, amount) {
+    if (map.has(item)) {
+        map.set(item, map.get(item) - amount <= 0? 0 : map.get(item) - amount);
+    } else {
+        console.log("Item not in pantry")
+    }
+}
+
+function addToPantry(item, amount) {
+    if (map.has(item)) {
+        map.set(item, map.get(item) + amount);
+    } else {
+        map.set(item, amount);
+    }
+}
+
+function showPantry() {
+    console.log(map);
 }
 
 // experimental of removing a variable in json, 
